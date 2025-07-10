@@ -11,11 +11,3 @@ public class BankingProjectApplication {
 	}
 
 }
-/*
-POST /accounts - Create new account
-POST /deposit - Deposit money
-POST /withdraw - Withdraw money
-POST /transfer - Transfer money between accounts
-GET /accounts - Get all accounts (with optional name filter)
-GET /accounts/{id} - Get account by ID
-*/

@@ -1,4 +1,4 @@
-package com.example.BankingProject.model;
+package com.example.BankingProject.dto;
 
 import java.time.LocalDateTime;
 

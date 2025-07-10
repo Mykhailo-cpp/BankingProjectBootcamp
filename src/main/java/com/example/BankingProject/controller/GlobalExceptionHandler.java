@@ -3,7 +3,10 @@ package com.example.BankingProject.controller;
 import com.example.BankingProject.exception.AccountNotFoundException;
 import com.example.BankingProject.exception.InsufficientBalanceException;
 import com.example.BankingProject.exception.InvalidAmountException;
-import com.example.BankingProject.model.ErrorResponse;
+import com.example.BankingProject.exception.UserAlreadyExistsException;
+import com.example.BankingProject.exception.InvalidCredentialsException;
+import com.example.BankingProject.exception.UserNotFoundException;
+import com.example.BankingProject.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -57,6 +59,67 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Invalid Amount",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getDescription(false)
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    // User-related exception handlers
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex, WebRequest request) {
+        logger.warn("User already exists exception: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "User Already Exists",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getDescription(false)
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex, WebRequest request) {
+        logger.warn("Invalid credentials exception: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Invalid Credentials",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getDescription(false)
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex, WebRequest request) {
+        logger.warn("User not found exception: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "User Not Found",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getDescription(false)
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, WebRequest request) {
+        logger.warn("Illegal argument exception: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid Input",
                 ex.getMessage(),
                 LocalDateTime.now(),
                 request.getDescription(false)
